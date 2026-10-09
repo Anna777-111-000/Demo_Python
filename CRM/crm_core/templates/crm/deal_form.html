@@ -1,0 +1,91 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{% if deal %}Редактирование сделки{% else %}Новая сделка{% endif %}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>{% if deal %}✏️ Редактирование сделки{% else %}➕ Новая сделка{% endif %}</h2>
+    <a href="{% if deal %}{% url 'crm:deal_detail' pk=deal.pk %}{% else %}{% url 'crm:deal_list' %}{% endif %}"
+       class="btn btn-outline-secondary">← Назад</a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" name="title" class="form-control" required value="{{ deal.title|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Компания *</label>
+                        <select name="company" class="form-select" required>
+                            <option value="">— выберите —</option>
+                            {% for c in companies %}
+                                <option value="{{ c.pk }}" {% if deal and deal.company_id == c.pk %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Контакт</label>
+                        <select name="contact" class="form-select">
+                            <option value="">— нет —</option>
+                            {% for ct in contacts %}
+                                <option value="{{ ct.pk }}" {% if deal and deal.contact_id == ct.pk %}selected{% endif %}>{{ ct.full_name }} ({{ ct.company.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Сумма</label>
+                            <input type="number" name="amount" class="form-control" value="{{ deal.amount|default:0 }}" step="0.01">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Стадия</label>
+                            <select name="stage" class="form-select">
+                                {% for code, name in stages %}
+                                    <option value="{{ code }}" {% if deal and deal.stage == code or not deal and code == 'new' %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Источник</label>
+                        <input type="text" name="source" class="form-control" value="{{ deal.source|default:'' }}" placeholder="Например: сайт, холодный звонок">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3">{{ deal.description|default:'' }}</textarea>
+                    </div>
+
+                    {% if can_reassign %}
+                    <div class="mb-3">
+                        <label class="form-label">Ответственный</label>
+                        <select name="owner" class="form-select">
+                            {% for o in owners %}
+                                <option value="{{ o.pk }}" {% if deal and deal.owner_id == o.pk %}selected{% endif %}>
+                                    {{ o.employee_profile.full_name|default:o.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    {% if not deal %}
+                        <p class="text-muted small">Ответственный будет назначен автоматически — вы.</p>
+                    {% endif %}
+                    <button class="btn btn-primary w-100">
+                        {% if deal %}Сохранить{% else %}Создать сделку{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,263 @@
+[
+{
+  "model": "accounts.role",
+  "pk": 1,
+  "fields": {
+    "name": "Сотрудник компании (не IT)",
+    "codename": "non_it_employee",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      1,
+      7,
+      8,
+      11,
+      21,
+      26,
+      33,
+      37,
+      40,
+      45,
+      51,
+      52,
+      55
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 2,
+  "fields": {
+    "name": "Сотрудник IT-блока",
+    "codename": "it_employee",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      1,
+      8,
+      11,
+      14,
+      18,
+      19,
+      20,
+      21,
+      22,
+      26,
+      33,
+      34,
+      37,
+      40,
+      45,
+      51,
+      52,
+      55
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 3,
+  "fields": {
+    "name": "Начальник направления",
+    "codename": "department_head",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      26,
+      28,
+      29,
+      33,
+      34,
+      35,
+      36,
+      37,
+      40,
+      41,
+      44,
+      45,
+      49,
+      51,
+      52,
+      54,
+      55
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 4,
+  "fields": {
+    "name": "Админ IT-блока",
+    "codename": "it_admin",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      33,
+      34,
+      37,
+      38,
+      40,
+      41,
+      44,
+      45,
+      46,
+      47,
+      48,
+      51,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 5,
+  "fields": {
+    "name": "Директор IT-блока",
+    "codename": "it_director",
+    "is_super_role": true,
+    "parent_role": null,
+    "permissions": []
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 6,
+  "fields": {
+    "name": "CEO / Генеральный директор",
+    "codename": "ceo",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      1,
+      8,
+      18,
+      19,
+      20,
+      26,
+      33,
+      37,
+      40,
+      41,
+      44,
+      51,
+      52,
+      53,
+      55
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 7,
+  "fields": {
+    "name": "Менеджер по продажам",
+    "codename": "sales_manager",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      61,
+      62,
+      63,
+      64,
+      65,
+      69,
+      70,
+      72
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 8,
+  "fields": {
+    "name": "Руководитель продаж",
+    "codename": "sales_head",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74
+    ]
+  }
+},
+{
+  "model": "accounts.role",
+  "pk": 9,
+  "fields": {
+    "name": "Маркетолог",
+    "codename": "marketer",
+    "is_super_role": false,
+    "parent_role": null,
+    "permissions": [
+      61,
+      63,
+      68
+    ]
+  }
+}
+]

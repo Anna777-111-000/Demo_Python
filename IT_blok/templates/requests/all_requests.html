@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Заявки{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="fas fa-clipboard-list" style="color: #8DA0AE;"></i>
+            Заявки
+        </h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Все заявки и предложения</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Тип</th>
+                            <th>От кого</th>
+                            <th>Описание</th>
+                            <th>Срочность</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr>
+                                <td>
+                                    <span class="badge
+                                        {% if req.request_type == 'admin' %}bg-info
+                                        {% elif req.request_type == 'development' %}bg-primary
+                                        {% else %}bg-secondary{% endif %}">
+                                        {% if req.request_type == 'admin' %}🔧 Запрос админам
+                                        {% elif req.request_type == 'development' %}💻 Запрос в разработку
+                                        {% else %}💡 Предложение{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ req.created_by.employee_profile.full_name|default:req.created_by.username }}</td>
+                                <td>{{ req.description|truncatechars:50 }}</td>
+                                <td>
+                                    <span class="badge
+                                        {% if req.priority == 'urgent' %}bg-danger
+                                        {% elif req.priority == 'high' %}bg-warning
+                                        {% elif req.priority == 'medium' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {% if req.priority == 'urgent' %}⚠️ Срочная
+                                        {% elif req.priority == 'high' %}🔴 Высокая
+                                        {% elif req.priority == 'medium' %}🟡 Средняя
+                                        {% else %}🟢 Низкая{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge
+                                        {% if req.status == 'new' %}bg-secondary
+                                        {% elif req.status == 'in_progress' %}bg-primary
+                                        {% elif req.status == 'done' %}bg-success
+                                        {% else %}bg-dark{% endif %}">
+                                        {% if req.status == 'new' %}🆕 Новый
+                                        {% elif req.status == 'in_progress' %}⚙️ В работе
+                                        {% elif req.status == 'done' %}✅ Выполнен
+                                        {% else %}⏸️ Отклонён{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted mb-0">Нет заявок</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

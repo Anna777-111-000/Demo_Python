@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% load permissions_tags %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT-блок</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8DA0AE;
+            --primary-dark: #7A8B99;
+            --primary-light: #B8C5CE;
+            --text-light-bg: #2C3E50;
+            --text-dark-bg: #F5F7FA;
+        }
+
+        .navbar.bg-primary {
+            background-color: var(--primary) !important;
+        }
+
+        .navbar-dark .navbar-nav .nav-link {
+            color: white;
+        }
+
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #f0f0f0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            margin-left: 15px;
+            color: white;
+        }
+
+        body.light-mode {
+            background-color: #F0F2F5;
+            color: var(--text-light-bg);
+        }
+
+        body.light-mode .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        body.light-mode .card-title {
+            color: #5D6D7E;
+        }
+
+        body.light-mode .text-muted {
+            color: #7A8B99 !important;
+        }
+
+        body.light-mode .alert-info {
+            background-color: #E8F0F4;
+            border-color: #B8C5CE;
+            color: #2C3E50;
+        }
+
+        body.dark-mode {
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .card {
+            background-color: #2D3748;
+            border: 1px solid #4A5568;
+            border-radius: 12px;
+        }
+
+        body.dark-mode .card-title {
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .text-muted {
+            color: #A0AEC0 !important;
+        }
+
+        body.dark-mode .alert-info {
+            background-color: #2D3748;
+            border-color: #6B7F8C;
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .form-check-label {
+            color: #E2E8F0 !important;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #2D3748;
+            border-color: #4A5568;
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .list-group-item {
+            background-color: #2D3748;
+            border-color: #4A5568;
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .table {
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .table-light {
+            background-color: #374151;
+            color: #E2E8F0;
+        }
+
+        .text-primary {
+            color: var(--primary-dark) !important;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 0.2rem rgba(107, 127, 140, 0.25);
+        }
+
+        .badge.bg-info { background-color: #17a2b8; }
+        .badge.bg-success { background-color: #28a745; }
+        .badge.bg-danger { background-color: #dc3545; }
+        .form-check-input {
+            cursor: pointer;
+        }
+        .permission-checkbox[data-from-roles="true"]:not(:checked) + label {
+            opacity: 0.7;
+        }
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background-color: #7A8B99;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .badge-role {
+            background-color: #7A8B99;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .badge-role-missing {
+            background-color: #6c757d;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #8DA0AE;
+            box-shadow: 0 0 0 0.2rem rgba(141, 160, 174, 0.25);
+        }
+
+        .permission-checkbox:checked {
+            accent-color: #7A8B99;
+        }
+
+        body.dark-mode .card-header {
+            background-color: #374151 !important;
+            border-bottom-color: #4A5568;
+        }
+
+        body.dark-mode .card-header h5,
+        body.dark-mode .card-header h6,
+        body.dark-mode .card-header small {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .border-bottom {
+            border-bottom-color: #4A5568 !important;
+        }
+
+        body.dark-mode .badge-role {
+            background-color: #7A8B99;
+            color: #1A202C;
+        }
+
+        body.dark-mode .btn-outline-secondary {
+            color: #A0AEC0;
+            border-color: #4A5568;
+        }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #4A5568;
+            color: #ffffff;
+        }
+
+        .dropdown-menu {
+            background-color: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .dropdown-menu {
+            background-color: #2D3748;
+            border-color: #4A5568;
+        }
+
+        .dropdown-item {
+            color: #2C3E50;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #F0F2F5;
+            color: #2C3E50;
+        }
+
+        body.dark-mode .dropdown-item {
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .dropdown-item:hover {
+            background-color: #4A5568;
+            color: #ffffff;
+        }
+
+        .dropdown-divider {
+            border-top-color: #E2E8F0;
+        }
+
+        body.dark-mode .dropdown-divider {
+            border-top-color: #4A5568;
+        }
+
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><i class="fas fa-code"></i> IT-блок</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+
+                    {# Дашборд — если есть право смотреть дашборд #}
+                    {% if user|has_permission:'can_view_dashboard' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="fas fa-chart-line"></i> Дашборд
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Запросы админам #}
+                    {% if user|has_permission:'can_create_request' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/requests/">
+                                <i class="fas fa-envelope"></i> Запросы
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Заявки (тикеты) #}
+                    {% if user|has_permission:'can_view_all_requests_short' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'requests:all_tickets' %}">
+                                <i class="fas fa-ticket-alt"></i> Заявки
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Задачи IT #}
+                    {% if user|has_permission:'can_view_own_tasks' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/tasks/">
+                                <i class="fas fa-tasks"></i> Задачи
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# База знаний #}
+                    {% if user|has_permission:'can_view_articles' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/knowledge/">
+                                <i class="fas fa-book"></i> База знаний
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Доступы #}
+                    {% if user|has_permission:'can_view_own_accesses' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'access:my_access' %}">
+                                <i class="fas fa-key"></i> Доступы
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Права / сотрудники #}
+                    {% if user|has_permission:'can_view_employee_list' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:employee_list' %}">
+                                <i class="fas fa-users-cog"></i> Права
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# CRM — если есть любое CRM-право #}
+                    {% if user|has_permission:'crm_view_deal' or user|has_permission:'crm_view_company' or user|has_permission:'crm_view_own_tasks' or user|has_permission:'crm_view_all_tasks' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://127.0.0.1:8001/">
+                                <i class="fas fa-briefcase"></i> CRM
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {# Admin — только суперюзерам и staff #}
+                    {% if user.is_superuser or user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                        </li>
+                    {% endif %}
+
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <span class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </span>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile_view' %}"><i class="fas fa-id-card me-2"></i> Мой профиль</a></li>
+                        <li><a class="dropdown-item" href="{% url 'access:my_access' %}"><i class="fas fa-key me-2"></i> Мои доступы</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/accounts/logout/"><i class="fas fa-sign-out-alt me-2"></i> Выход</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/accounts/login/"><i class="fas fa-sign-in-alt"></i> Вход</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid p-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+        body.classList.remove('light-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        body.classList.add('light-mode');
+        body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    });
+
+    // Авто-исчезновение уведомлений через 20 секунд
+    setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            let bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 20000);
+</script>
+</body>
+</html>

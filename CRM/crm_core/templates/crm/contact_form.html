@@ -1,0 +1,50 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{% if contact %}Редактирование контакта{% else %}Новый контакт{% endif %}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>{% if contact %}✏️ Редактирование контакта{% else %}➕ Новый контакт{% endif %}</h2>
+    <a href="{% url 'crm:company_detail' pk=company.pk %}" class="btn btn-outline-secondary">← К компании</a>
+</div>
+
+<p class="text-muted">Компания: <strong>{{ company.name }}</strong></p>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">ФИО *</label>
+                        <input type="text" name="full_name" class="form-control" required value="{{ contact.full_name|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Должность</label>
+                        <input type="text" name="position" class="form-control" value="{{ contact.position|default:'' }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Телефон</label>
+                            <input type="text" name="phone" class="form-control" value="{{ contact.phone|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ contact.email|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telegram</label>
+                        <input type="text" name="tg_nick" class="form-control" value="{{ contact.tg_nick|default:'' }}" placeholder="@username">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="is_primary" id="is_primary" {% if contact.is_primary %}checked{% endif %}>
+                        <label class="form-check-label" for="is_primary">Основной контакт</label>
+                    </div>
+                    <button class="btn btn-primary">{% if contact %}Сохранить{% else %}Создать{% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

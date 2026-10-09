@@ -1,0 +1,10 @@
+{% extends 'crm/base_crm.html' %}
+{% block content %}
+<h2>Удалить задачу?</h2>
+<p><strong>{{ task.title }}</strong></p>
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Удалить</button>
+    <a href="{% url 'crm:task_kanban' %}" class="btn btn-outline-secondary">Отмена</a>
+</form>
+{% endblock %}

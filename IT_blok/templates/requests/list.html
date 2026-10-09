@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Запросы админам{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-ticket-alt" style="color: #8DA0AE;"></i>
+            Запросы админам
+        </h1>
+        <a href="{% url 'requests:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Новый запрос
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Список запросов</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if requests %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Тема</th>
+                            <th>Автор</th>
+                            <th>Исполнитель</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td>{{ req.title|truncatechars:50 }}</td>
+                            <td>{{ req.created_by.username }}</td>
+                            <td>{{ req.assigned_to.username|default:"—" }}</td>
+                            <td>
+                               {% if req.status == 'new' %}
+                                <span class="badge" style="background-color: #FFF3E0; color: #E65100; padding: 5px 10px; border-radius: 20px;">
+                                    🟡 Новый
+                                </span>
+                            {% elif req.status == 'in_progress' %}
+                                <span class="badge" style="background-color: #E3F2FD; color: #1565C0; padding: 5px 10px; border-radius: 20px;">
+                                    🔵 В работе
+                                </span>
+                            {% elif req.status == 'done' %}
+                                <span class="badge" style="background-color: #E8F5E9; color: #2E7D32; padding: 5px 10px; border-radius: 20px;">
+                                    ✅ Выполнен
+                                </span>
+                            {% elif req.status == 'rejected' %}
+                                <span class="badge" style="background-color: #FFEBEE; color: #C62828; padding: 5px 10px; border-radius: 20px;">
+                                    ❌ Отклонён
+                                </span>
+                            {% endif %}
+                            </td>
+                            <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'requests:detail' req.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                             </td>
+                        </td>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Нет запросов</p>
+                <a href="{% url 'requests:create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Создать первый запрос
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

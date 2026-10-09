@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Назначение прав пользователю</h1>
+            <a href="{% url 'user_list' %}" class="btn btn-outline-primary mb-3">
+                <i class="fas fa-arrow-left"></i> Назад к списку
+            </a>
+        </div>
+    </div>
+
+    <!-- Карточка пользователя -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-user-circle"></i> Информация о пользователе</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>ФИО:</strong><br>
+                    {{ target_user.get_full_name|default:"Не указано" }}
+                </div>
+                <div class="col-md-2">
+                    <strong>Username:</strong><br>
+                    {{ target_user.username }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Email:</strong><br>
+                    {{ target_user.email|default:"Не указан" }}
+                </div>
+                <div class="col-md-2">
+                    <strong>Telegram:</strong><br>
+                    {{ target_user.tg_nick|default:"Не указан" }}
+                </div>
+                <div class="col-md-2">
+                    <strong>Отдел:</strong><br>
+                    {{ target_user.profile.get_department_display|default:"Не указан" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if error_message %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> {{ error_message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+
+        {% if not can_edit %}
+        <div class="alert alert-warning">
+            <i class="fas fa-lock"></i> {{ error_message|default:"У вас нет прав для изменения прав этого пользователя." }}
+        </div>
+        {% endif %}
+
+        {% if can_edit %}
+        <!-- Выбор ролей -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tags"></i> Роли пользователя</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for role in all_roles %}
+                    <div class="col-md-3 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input role-checkbox" type="checkbox"
+                                   name="roles" value="{{ role.id }}" id="role_{{ role.id }}"
+                                   data-role-code="{{ role.code }}"
+                                   {% if role in user_roles %}checked{% endif %}>
+                            <label class="form-check-label" for="role_{{ role.id }}">
+                                <strong>{{ role.name }}</strong>
+                                {% if role.max_users %}
+                                    <small class="text-muted">(макс: {{ role.max_users }})</small>
+                                {% endif %}
+                                <br>
+                                <small class="text-muted">{{ role.description|default:"" }}</small>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Совет:</strong> Права от выбранных ролей суммируются. Вы можете вручную добавить или убрать конкретные права ниже.
+                </div>
+            </div>
+        </div>
+
+        <!-- Все права (группировка по модулям) -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lock"></i> Детальные права</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <button type="button" id="checkAll" class="btn btn-sm btn-outline-primary">Выбрать всё</button>
+                    <button type="button" id="uncheckAll" class="btn btn-sm btn-outline-secondary">Снять всё</button>
+                    <button type="button" id="resetFromRoles" class="btn btn-sm btn-outline-info">Сбросить к правам ролей</button>
+                </div>
+
+                {% for app_name, permissions in permissions_by_app.items %}
+                <div class="mb-4">
+                    <h6 class="border-bottom pb-2 text-primary">
+                        <i class="fas fa-folder"></i> {{ app_name|title }}
+                    </h6>
+                    <div class="row">
+                        {% for perm in permissions %}
+                        {% with perm_code=app_name|add:'.'|add:perm.codename %}
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input permission-checkbox"
+                                       type="checkbox"
+                                       name="permission_{{ perm_code }}"
+                                       value="{{ perm_code }}"
+                                       id="perm_{{ perm.id }}"
+                                       {% if perm_code in final_perms %}checked{% endif %}
+                                       data-from-roles="{% if perm_code in effective_perm_codes %}true{% else %}false{% endif %}">
+                                <label class="form-check-label" for="perm_{{ perm.id }}">
+                                    {{ perm.name }}
+                                    {% if perm_code in effective_perm_codes %}
+                                        <span class="badge bg-info ms-1">от роли</span>
+                                    {% endif %}
+                                    {% if perm_code in extra_perms %}
+                                        <span class="badge bg-success ms-1">добавлено</span>
+                                    {% endif %}
+                                    {% if perm_code in restricted_perms %}
+                                        <span class="badge bg-danger ms-1">запрещено</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save"></i> Сохранить права
+            </button>
+        </div>
+        {% else %}
+        <div class="alert alert-secondary">
+            <i class="fas fa-eye"></i> Только просмотр (нет прав на редактирование)
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+    // Получение всех чекбоксов прав
+    const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+    const roleCheckboxes = document.querySelectorAll('.role-checkbox');
+
+    // Сохраняем соответствие ролей и прав
+    const rolePermissionsMap = {};
+    {% for role in all_roles %}
+    rolePermissionsMap[{{ role.id }}] = [
+        {% for perm in role.permissions.all %}
+        "{{ perm.content_type.app_label }}.{{ perm.codename }}",
+        {% endfor %}
+    ];
+    {% endfor %}
+
+    // Функция обновления прав на основе выбранных ролей
+    function updatePermissionsFromRoles() {
+        let selectedRolePerms = new Set();
+
+        roleCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const roleId = checkbox.value;
+                const perms = rolePermissionsMap[roleId] || [];
+                perms.forEach(perm => selectedRolePerms.add(perm));
+            }
+        });
+
+        permissionCheckboxes.forEach(checkbox => {
+            const permCode = checkbox.value;
+            const isFromRoles = selectedRolePerms.has(permCode);
+            checkbox.dataset.fromRoles = isFromRoles;
+            if (isFromRoles) {
+                checkbox.checked = true;
+            }
+        });
+
+        updateBadges();
+    }
+
+    function updateBadges() {
+        permissionCheckboxes.forEach(checkbox => {
+            const label = checkbox.parentElement.querySelector('.form-check-label');
+            const isFromRoles = checkbox.dataset.fromRoles === 'true';
+            const isChecked = checkbox.checked;
+
+            const oldBadges = label.querySelectorAll('.badge');
+            oldBadges.forEach(badge => badge.remove());
+
+            if (isFromRoles) {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info ms-1';
+                badge.textContent = 'от роли';
+                label.appendChild(badge);
+            }
+
+            if (isChecked && !isFromRoles) {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-success ms-1';
+                badge.textContent = 'добавлено';
+                label.appendChild(badge);
+            }
+
+            if (!isChecked && isFromRoles) {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-danger ms-1';
+                badge.textContent = 'запрещено';
+                label.appendChild(badge);
+            }
+        });
+    }
+
+    roleCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updatePermissionsFromRoles);
+    });
+
+    document.getElementById('checkAll')?.addEventListener('click', () => {
+        permissionCheckboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        updateBadges();
+    });
+
+    document.getElementById('uncheckAll')?.addEventListener('click', () => {
+        permissionCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateBadges();
+    });
+
+    document.getElementById('resetFromRoles')?.addEventListener('click', () => {
+        updatePermissionsFromRoles();
+    });
+
+    permissionCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBadges);
+    });
+
+    updatePermissionsFromRoles();
+</script>
+{% endblock %}

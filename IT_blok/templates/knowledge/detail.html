@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h1 class="mb-2">
+                <i class="fas fa-book" style="color: #8DA0AE;"></i>
+                {{ article.title }}
+            </h1>
+            <div class="text-muted small">
+                <i class="fas fa-user"></i>
+                {{ article.created_by.employee_profile.full_name|default:article.created_by.username }}
+                <span class="ms-3">
+                    <i class="fas fa-calendar"></i> {{ article.created_at|date:"d.m.Y" }}
+                </span>
+                {% if article.updated_at != article.created_at %}
+                <span class="ms-3">
+                    <i class="fas fa-edit"></i> обновлено {{ article.updated_at|date:"d.m.Y" }}
+                </span>
+                {% endif %}
+                {% if not article.is_published %}
+                <span class="badge bg-warning text-dark ms-2">Черновик</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            {% if can_edit %}
+                <a href="{% url 'knowledge:edit' article.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+            {% endif %}
+            {% if can_delete %}
+                <a href="{% url 'knowledge:delete' article.id %}" class="btn btn-outline-danger">
+                    <i class="fas fa-trash"></i> Удалить
+                </a>
+            {% endif %}
+            <a href="{% url 'knowledge:list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> К списку
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="mb-3">
+                <span class="badge bg-secondary">{{ article.get_category_display }}</span>
+                {% if article.get_tags_list %}
+                    {% for tag in article.get_tags_list %}
+                        <span class="badge bg-light text-dark border ms-1">#{{ tag }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="article-content">
+                {{ article.content|safe }}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

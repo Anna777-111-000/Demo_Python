@@ -1,0 +1,11 @@
+{% extends 'crm/base_crm.html' %}
+{% block content %}
+<h2>Удалить компанию?</h2>
+<p><strong>{{ company.name }}</strong></p>
+<p class="text-muted">Все сделки и контакты компании будут удалены.</p>
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Удалить</button>
+    <a href="{% url 'crm:company_detail' pk=company.pk %}" class="btn btn-outline-secondary">Отмена</a>
+</form>
+{% endblock %}

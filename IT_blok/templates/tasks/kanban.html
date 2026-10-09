@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Задачи — Канбан{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-0">
+                <i class="fas fa-tasks" style="color: #8DA0AE;"></i> 
+                Задачи — Канбан
+            </h1>
+            <div class="btn-group mt-2">
+                <a href="?view=list" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-table"></i> Список
+                </a>
+                <a href="?view=kanban" class="btn btn-sm btn-primary">
+                    <i class="fas fa-columns"></i> Канбан
+                </a>
+            </div>
+        </div>
+        <a href="{% url 'tasks:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Новая задача
+        </a>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="">Все категории</option>
+                        {% for value, label in categories %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="priorityFilter" class="form-select">
+                        <option value="">Все приоритеты</option>
+                        {% for value, label in priorities %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button id="resetFilters" class="btn btn-secondary w-100">
+                        <i class="fas fa-times"></i> Сбросить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Канбан-доска -->
+    <div class="kanban-board">
+        <div class="kanban-column" data-status="new">
+            <div class="kanban-header">
+                <span class="status-icon">🆕</span> НОВЫЕ
+                <span class="task-count" id="count-new">0</span>
+            </div>
+            <div class="kanban-tasks" id="tasks-new"></div>
+        </div>
+        <div class="kanban-column" data-status="in_progress">
+            <div class="kanban-header">
+                <span class="status-icon">⚙️</span> В РАБОТЕ
+                <span class="task-count" id="count-in_progress">0</span>
+            </div>
+            <div class="kanban-tasks" id="tasks-in_progress"></div>
+        </div>
+        <div class="kanban-column" data-status="done">
+            <div class="kanban-header">
+                <span class="status-icon">✅</span> ВЫПОЛНЕНЫ
+                <span class="task-count" id="count-done">0</span>
+            </div>
+            <div class="kanban-tasks" id="tasks-done"></div>
+        </div>
+        <div class="kanban-column" data-status="deferred">
+            <div class="kanban-header">
+                <span class="status-icon">⏸️</span> ОТЛОЖЕНЫ
+                <span class="task-count" id="count-deferred">0</span>
+            </div>
+            <div class="kanban-tasks" id="tasks-deferred"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .kanban-board {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+    }
+    .kanban-column {
+        background: #f8f9fa;
+        border-radius: 12px;
+        min-width: 300px;
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+    }
+    body.dark-mode .kanban-column {
+        background: #2D3748;
+    }
+    .kanban-header {
+        padding: 15px;
+        font-weight: bold;
+        border-bottom: 2px solid #8DA0AE;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(141, 160, 174, 0.1);
+        border-radius: 12px 12px 0 0;
+    }
+    .kanban-tasks {
+        padding: 10px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .task-card {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        cursor: grab;
+        transition: all 0.2s;
+        border-left: 4px solid;
+    }
+    .task-card:active {
+        cursor: grabbing;
+    }
+    .task-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    body.dark-mode .task-card {
+        background: #374151;
+        color: #E2E8F0;
+    }
+    .task-card.priority-high { border-left-color: #dc3545; }
+    .task-card.priority-urgent { border-left-color: #dc3545; background-color: #fff0f0; }
+    .task-card.priority-medium { border-left-color: #fd7e14; }
+    .task-card.priority-low { border-left-color: #28a745; }
+    body.dark-mode .task-card.priority-urgent { background-color: #3d1f1f; }
+    .task-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .task-meta {
+        font-size: 11px;
+        color: #6c757d;
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    body.dark-mode .task-meta {
+        color: #A0AEC0;
+    }
+    .badge-priority {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 12px;
+    }
+    .task-count {
+        background: rgba(141, 160, 174, 0.3);
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    const statusMap = {
+        'new': 'tasks-new',
+        'in_progress': 'tasks-in_progress',
+        'done': 'tasks-done',
+        'deferred': 'tasks-deferred'
+    };
+    
+    let allTasks = [];
+    
+    // Загрузка задач через AJAX
+    async function loadTasks() {
+        const category = document.getElementById('categoryFilter').value;
+        const priority = document.getElementById('priorityFilter').value;
+        
+        const response = await fetch(`/tasks/api/tasks/?category=${category}&priority=${priority}`);
+        const data = await response.json();
+        allTasks = data.tasks;
+        renderKanban();
+    }
+    
+    function renderKanban() {
+        // Очищаем колонки
+        for (const status in statusMap) {
+            document.getElementById(statusMap[status]).innerHTML = '';
+        }
+        
+        // Группируем задачи по статусам
+        const grouped = {
+            new: [],
+            in_progress: [],
+            done: [],
+            deferred: []
+        };
+        
+        allTasks.forEach(task => {
+            if (grouped[task.status]) {
+                grouped[task.status].push(task);
+            }
+        });
+        
+        // Обновляем счётчики и отображаем карточки
+        for (const [status, tasks] of Object.entries(grouped)) {
+            const container = document.getElementById(statusMap[status]);
+            document.getElementById(`count-${status}`).innerText = tasks.length;
+            
+            tasks.forEach(task => {
+                container.appendChild(createTaskCard(task));
+            });
+        }
+    }
+    
+    function createTaskCard(task) {
+        const card = document.createElement('div');
+        card.className = `task-card priority-${task.priority}`;
+        card.setAttribute('data-id', task.id);
+        card.innerHTML = `
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div class="task-meta">
+                <span>${task.category_display}</span>
+                <span>👤 ${task.assigned_to_name}</span>
+                ${task.deadline ? `<span>📅 ${task.deadline}</span>` : ''}
+                ${task.is_overdue ? '<span class="text-danger">⚠️ Просрочено</span>' : ''}
+            </div>
+            <div class="task-meta">
+                <span class="badge-priority priority-${task.priority}">${task.priority_display}</span>
+            </div>
+        `;
+        
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.task-card')) return;
+            window.location.href = `/tasks/${task.id}/`;
+        });
+        
+        return card;
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Drag & Drop
+    function initDragAndDrop() {
+        for (const status in statusMap) {
+            const container = document.getElementById(statusMap[status]);
+            Sortable.create(container, {
+                group: {
+                    name: 'tasks',
+                    pull: true,
+                    revertClone: false
+                },
+                animation: 200,
+                onEnd: async function(evt) {
+                    const taskId = evt.item.getAttribute('data-id');
+                    const newStatus = evt.to.parentElement.getAttribute('data-status');
+                    
+                    if (taskId && newStatus) {
+                        await fetch(`/tasks/api/tasks/${taskId}/update-status/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({ status: newStatus })
+                        });
+                        loadTasks();
+                    }
+                }
+            });
+        }
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    document.getElementById('categoryFilter').addEventListener('change', loadTasks);
+    document.getElementById('priorityFilter').addEventListener('change', loadTasks);
+    document.getElementById('resetFilters').addEventListener('click', () => {
+        document.getElementById('categoryFilter').value = '';
+        document.getElementById('priorityFilter').value = '';
+        loadTasks();
+    });
+    
+    loadTasks().then(() => initDragAndDrop());
+</script>
+{% endblock %}

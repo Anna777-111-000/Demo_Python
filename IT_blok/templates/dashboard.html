@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Дашборд IT-блока</h1>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card h-100 p-3">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Задачи</h5>
+                    <h2 class="text-primary">{{ tasks_count }}</h2>
+                    <p class="text-muted mb-0">активных задач</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-3">
+                <div class="card-body text-center">
+                    <i class="fas fa-ticket-alt fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Запросы</h5>
+                    <h2 class="text-primary">{{ requests_count }}</h2>
+                    <p class="text-muted mb-0">в работе</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-3">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Сотрудники</h5>
+                    <h2 class="text-primary">{{ users_count }}</h2>
+                    <p class="text-muted mb-0">в IT-блоке</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-3">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Готово</h5>
+                    <h2 class="text-primary">{{ completed_count }}</h2>
+                    <p class="text-muted mb-0">за месяц</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle"></i> Добро пожаловать, {{ user.get_full_name|default:user.username }}!
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'accounts:employee_list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-user-edit" style="color: #8DA0AE;"></i>
+            Редактирование: {{ employee.full_name }}
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Основная информация</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="editForm">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">ФИО <span class="text-danger">*</span></label>
+                                <input type="text" name="full_name" class="form-control" value="{{ employee.full_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Логин (username)</label>
+                                <input type="text" name="username" class="form-control" value="{{ employee.user.username }}">
+                                <small class="text-muted">Используется для входа в систему</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Корпоративная почта</label>
+                                <input type="email" name="corporate_email" class="form-control" value="{{ employee.corporate_email }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Телефон</label>
+                                <input type="text" name="phone" class="form-control" value="{{ employee.phone|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Telegram (ник)</label>
+                                <input type="text" name="tg_nick" class="form-control" value="{{ employee.tg_nick|default:'' }}">
+                                <small class="text-muted">Для уведомлений и восстановления пароля</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Должность</label>
+                                <input type="text" name="position" class="form-control" value="{{ employee.position|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Отдел</label>
+                                <select name="department" class="form-select">
+                                    <option value="it" {% if employee.department == 'it' %}selected{% endif %}>IT-блок</option>
+                                    <option value="hr" {% if employee.department == 'hr' %}selected{% endif %}>HR</option>
+                                    <option value="finance" {% if employee.department == 'finance' %}selected{% endif %}>Финансы</option>
+                                    <option value="marketing" {% if employee.department == 'marketing' %}selected{% endif %}>Маркетинг</option>
+                                    <option value="sales" {% if employee.department == 'sales' %}selected{% endif %}>Продажи</option>
+                                    <option value="other" {% if employee.department == 'other' %}selected{% endif %}>Другое</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-key"></i> Управление паролем</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Пароль хранится в зашифрованном виде. Вы можете сгенерировать новый.</p>
+                    <button type="button" class="btn btn-warning w-100" id="generatePasswordBtn">
+                        <i class="fas fa-sync-alt"></i> Сгенерировать новый пароль
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Действия</h5>
+                </div>
+                <div class="card-body">
+                    <button type="submit" form="editForm" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                    <a href="{% url 'accounts:employee_list' %}" class="btn btn-secondary w-100">
+                        <i class="fas fa-times"></i> Отмена
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для пароля -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Новый пароль для {{ employee.full_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Пароль показывается только один раз!
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" id="generatedPassword" class="form-control" readonly>
+                    <button class="btn btn-primary" id="copyPasswordBtn" type="button">
+                        <i class="fas fa-copy"></i> Копировать
+                    </button>
+                </div>
+                <p class="text-muted small">Скопируйте пароль и отправьте его сотруднику любым безопасным способом.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('generatePasswordBtn').addEventListener('click', function() {
+    fetch('{% url "accounts:employee_generate_password" employee.id %}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.password) {
+                document.getElementById('generatedPassword').value = data.password;
+                new bootstrap.Modal(document.getElementById('passwordModal')).show();
+            } else if (data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+});
+
+document.getElementById('copyPasswordBtn').addEventListener('click', function() {
+    const passwordInput = document.getElementById('generatedPassword');
+    passwordInput.select();
+    document.execCommand('copy');
+    
+    // Всплывающее уведомление (toast)
+    const toast = document.createElement('div');
+    toast.className = 'position-fixed bottom-0 end-0 p-3';
+    toast.style.zIndex = '1050';
+    toast.innerHTML = `
+        <div class="toast show" role="alert">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">✅ Скопировано</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                Пароль скопирован в буфер обмена
+            </div>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+});
+</script>
+{% endblock %}

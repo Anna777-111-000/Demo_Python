@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Новый запрос</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="title" class="form-control mb-2" placeholder="Тема" required>
+        <textarea name="description" class="form-control mb-2" placeholder="Описание" required></textarea>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+</div>
+{% endblock %}

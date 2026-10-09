@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Все доступы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-database" style="color: #8DA0AE;"></i>
+            Все доступы
+        </h1>
+        <a href="{% url 'access:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Выдать доступ
+        </a>
+    </div>
+
+    <!-- Фильтры и сортировка -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="service" class="form-control"
+                           placeholder="Фильтр по сервису" value="{{ service_filter }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="employee" class="form-control"
+                           placeholder="Фильтр по сотруднику" value="{{ employee_filter }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="sort" class="form-select">
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Сначала новые</option>
+                        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Сначала старые</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Таблица доступов -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Сотрудник</th>
+                            <th>Сервис</th>
+                            <th>Кто выдал</th>
+                            <th>Дата выдачи</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for acc in accesses %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        {{ acc.employee.employee_profile.full_name|make_list|first|upper }}
+                                    </div>
+                                    <div class="ms-2">
+                                        <strong>{{ acc.employee.employee_profile.full_name }}</strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if acc.service_url %}
+                                    <img src="{{ acc.get_service_logo }}" alt="" style="width: 20px; height: 20px; margin-right: 8px;" onerror="this.style.display='none'">
+                                    {% endif %}
+                                    {{ acc.service_name }}
+                                </div>
+                            </td>
+                            <td>
+                                <i class="fas fa-user-check text-muted me-1"></i>
+                                {{ acc.granted_by.employee_profile.full_name|default:acc.granted_by.username }}
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar-alt text-muted me-1"></i>
+                                {{ acc.granted_at|date:"d.m.Y" }}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <!-- Кнопка подробнее (глаз) -->
+                                    <a href="{% url 'access:detail' acc.id %}" class="btn btn-sm btn-outline-secondary" title="Подробнее">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <!-- Кнопка отозвать (неяркая) -->
+                                    <a href="{% url 'access:revoke' acc.id %}" class="btn btn-sm btn-outline-danger" title="Отозвать доступ" onclick="return confirm('Отозвать доступ у {{ acc.employee.employee_profile.full_name }}?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="fas fa-database fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Нет выданных доступов</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

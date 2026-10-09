@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'requests:detail' request.id %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">{{ title }}</h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Назначить на:</label>
+                    <select name="assigned_to" class="form-select" required>
+                        <option value="">Выберите администратора</option>
+                        {% for admin in admins %}
+                        <option value="{{ admin.user.id }}">{{ admin.full_name }} ({{ admin.user.username }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'requests:detail' request.id %}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Назначить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

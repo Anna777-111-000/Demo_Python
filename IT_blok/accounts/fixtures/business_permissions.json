@@ -1,0 +1,742 @@
+[
+  {
+    "model": "accounts.businesspermission",
+    "pk": 1,
+    "fields": {
+      "codename": "can_create_request",
+      "name": "Подать запрос админам",
+      "module": "requests",
+      "description": "Может создать новый запрос для администраторов"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 2,
+    "fields": {
+      "codename": "can_take_request",
+      "name": "Взять запрос в работу",
+      "module": "requests",
+      "description": "Может назначить запрос на себя"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 3,
+    "fields": {
+      "codename": "can_close_request",
+      "name": "Закрыть запрос",
+      "module": "requests",
+      "description": "Может отметить запрос как выполненный"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 4,
+    "fields": {
+      "codename": "can_reject_request",
+      "name": "Отклонить запрос",
+      "module": "requests",
+      "description": "Может отклонить запрос с указанием причины"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 5,
+    "fields": {
+      "codename": "can_assign_request_to_other",
+      "name": "Назначить запрос другому",
+      "module": "requests",
+      "description": "Может переназначить запрос другому сотруднику"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 6,
+    "fields": {
+      "codename": "can_comment_request",
+      "name": "Комментировать запрос",
+      "module": "requests",
+      "description": "Может оставлять комментарии к запросу"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 7,
+    "fields": {
+      "codename": "can_view_all_requests_short",
+      "name": "Видеть все запросы (кратко)",
+      "module": "requests",
+      "description": "Видит список всех запросов с базовой информацией"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 8,
+    "fields": {
+      "codename": "can_view_all_requests_detail",
+      "name": "Видеть все запросы (подробно)",
+      "module": "requests",
+      "description": "Видит полную информацию по всем запросам"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 9,
+    "fields": {
+      "codename": "can_view_department_requests",
+      "name": "Видеть запросы своего отдела",
+      "module": "requests",
+      "description": "Видит запросы, созданные в его отделе"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 10,
+    "fields": {
+      "codename": "can_delete_request",
+      "name": "Удалить запрос",
+      "module": "requests",
+      "description": "Может удалить любой запрос"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 11,
+    "fields": {
+      "codename": "can_create_task_for_self",
+      "name": "Создать задачу (себе)",
+      "module": "tasks",
+      "description": "Может создать задачу для себя"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 12,
+    "fields": {
+      "codename": "can_create_task_for_other",
+      "name": "Создать задачу (другому)",
+      "module": "tasks",
+      "description": "Может создать задачу для другого сотрудника"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 13,
+    "fields": {
+      "codename": "can_assign_task",
+      "name": "Назначать задачи",
+      "module": "tasks",
+      "description": "Может переназначить задачу другому"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 14,
+    "fields": {
+      "codename": "can_change_own_task_status",
+      "name": "Изменить статус своей задачи",
+      "module": "tasks",
+      "description": "Может менять статус у задач, где он исполнитель"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 15,
+    "fields": {
+      "codename": "can_change_any_task_status",
+      "name": "Изменить статус любой задачи",
+      "module": "tasks",
+      "description": "Может менять статус любых задач"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 16,
+    "fields": {
+      "codename": "can_change_task_deadline",
+      "name": "Изменить дедлайн задачи",
+      "module": "tasks",
+      "description": "Может изменять срок выполнения задачи"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 17,
+    "fields": {
+      "codename": "can_delete_task",
+      "name": "Удалить задачу",
+      "module": "tasks",
+      "description": "Может удалить задачу"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 18,
+    "fields": {
+      "codename": "can_view_all_tasks_brief",
+      "name": "Смотреть все задачи блока (без подробностей)",
+      "module": "tasks",
+      "description": "Видит общий список задач без деталей"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 19,
+    "fields": {
+      "codename": "can_view_department_tasks",
+      "name": "Смотреть задачи своего отдела",
+      "module": "tasks",
+      "description": "Видит задачи своего отдела"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 20,
+    "fields": {
+      "codename": "can_view_own_tasks",
+      "name": "Смотреть только свои задачи",
+      "module": "tasks",
+      "description": "Видит только задачи, где он исполнитель"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 21,
+    "fields": {
+      "codename": "can_comment_task",
+      "name": "Комментировать задачи",
+      "module": "tasks",
+      "description": "Может оставлять комментарии к задачам"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 22,
+    "fields": {
+      "codename": "can_create_private_task",
+      "name": "Создавать скрытую (приватную) задачу",
+      "module": "tasks",
+      "description": "Может создавать задачи, видимые только участникам"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 23,
+    "fields": {
+      "codename": "can_grant_access",
+      "name": "Выдать доступ",
+      "module": "access",
+      "description": "Может выдать доступ сотруднику"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 24,
+    "fields": {
+      "codename": "can_revoke_access",
+      "name": "Отозвать доступ",
+      "module": "access",
+      "description": "Может отозвать доступ у сотрудника"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 25,
+    "fields": {
+      "codename": "can_view_all_accesses",
+      "name": "Смотреть доступы любого сотрудника",
+      "module": "access",
+      "description": "Видит доступы всех сотрудников"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 26,
+    "fields": {
+      "codename": "can_view_own_accesses",
+      "name": "Смотреть свои доступы",
+      "module": "access",
+      "description": "Видит только свои доступы"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 27,
+    "fields": {
+      "codename": "can_edit_access",
+      "name": "Редактировать доступ",
+      "module": "access",
+      "description": "Может изменять параметры доступа"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 28,
+    "fields": {
+      "codename": "can_create_article",
+      "name": "Создать статью",
+      "module": "kb",
+      "description": "Может создать новую статью в базе знаний"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 29,
+    "fields": {
+      "codename": "can_edit_own_article",
+      "name": "Редактировать свою статью",
+      "module": "kb",
+      "description": "Может редактировать созданные им статьи"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 30,
+    "fields": {
+      "codename": "can_edit_any_article",
+      "name": "Редактировать любую статью",
+      "module": "kb",
+      "description": "Может редактировать любые статьи"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 31,
+    "fields": {
+      "codename": "can_delete_own_article",
+      "name": "Удалить свою статью",
+      "module": "kb",
+      "description": "Может удалять созданные им статьи"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 32,
+    "fields": {
+      "codename": "can_delete_any_article",
+      "name": "Удалить любую статью",
+      "module": "kb",
+      "description": "Может удалять любые статьи"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 33,
+    "fields": {
+      "codename": "can_view_articles",
+      "name": "Смотреть статьи",
+      "module": "kb",
+      "description": "Базовое право на просмотр статей"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 34,
+    "fields": {
+      "codename": "can_comment_article",
+      "name": "Комментировать статьи",
+      "module": "kb",
+      "description": "Может оставлять комментарии к статьям"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 35,
+    "fields": {
+      "codename": "can_create_draft",
+      "name": "Создать черновик статьи",
+      "module": "kb",
+      "description": "Может создавать неопубликованные черновики"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 36,
+    "fields": {
+      "codename": "can_publish_article",
+      "name": "Опубликовать статью",
+      "module": "kb",
+      "description": "Может публиковать статьи (черновик → опубликовано)"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 37,
+    "fields": {
+      "codename": "can_view_dashboard",
+      "name": "Смотреть общий дашборд",
+      "module": "dashboard",
+      "description": "Видит главную страницу с метриками"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 38,
+    "fields": {
+      "codename": "can_configure_widgets",
+      "name": "Настраивать виджеты дашборда",
+      "module": "dashboard",
+      "description": "Может добавлять/убирать блоки на дашборде"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 39,
+    "fields": {
+      "codename": "can_edit_manual_activity",
+      "name": "Редактировать ручную активность",
+      "module": "dashboard",
+      "description": "Может вносить данные о ручной активности"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 40,
+    "fields": {
+      "codename": "can_create_suggestion",
+      "name": "Создать предложение",
+      "module": "suggestions",
+      "description": "Может создать предложение в Suggestion Box"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 41,
+    "fields": {
+      "codename": "can_view_suggestions",
+      "name": "Просматривать предложения",
+      "module": "suggestions",
+      "description": "Видит список предложений"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 42,
+    "fields": {
+      "codename": "can_change_suggestion_status",
+      "name": "Изменить статус предложения",
+      "module": "suggestions",
+      "description": "Может менять статус (принято/отклонено)"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 43,
+    "fields": {
+      "codename": "can_delete_suggestion",
+      "name": "Удалить предложение",
+      "module": "suggestions",
+      "description": "Может удалить предложение"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 44,
+    "fields": {
+      "codename": "can_comment_suggestion",
+      "name": "Комментировать предложения",
+      "module": "suggestions",
+      "description": "Может комментировать предложения"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 45,
+    "fields": {
+      "codename": "can_view_own_logs",
+      "name": "Смотреть свои логи",
+      "module": "audit",
+      "description": "Видит только свои действия в аудите"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 46,
+    "fields": {
+      "codename": "can_view_all_logs",
+      "name": "Смотреть логи всех",
+      "module": "audit",
+      "description": "Видит действия всех пользователей"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 47,
+    "fields": {
+      "codename": "can_export_logs",
+      "name": "Экспортировать логи",
+      "module": "audit",
+      "description": "Может выгружать логи в файл"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 48,
+    "fields": {
+      "codename": "can_filter_logs",
+      "name": "Фильтровать логи",
+      "module": "audit",
+      "description": "Может фильтровать логи по разным параметрам"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 49,
+    "fields": {
+      "codename": "can_send_notification_to_department",
+      "name": "Отправить уведомление своему отделу",
+      "module": "notifications",
+      "description": "Может отправить уведомление сотрудникам своего отдела"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 50,
+    "fields": {
+      "codename": "can_send_notification_to_block",
+      "name": "Отправить уведомление всему блоку",
+      "module": "notifications",
+      "description": "Может отправить уведомление всему IT-блоку"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 51,
+    "fields": {
+      "codename": "can_view_notification_history",
+      "name": "Просматривать историю уведомлений",
+      "module": "notifications",
+      "description": "Видит историю отправленных уведомлений"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 52,
+    "fields": {
+      "codename": "can_view_employee_list",
+      "name": "Смотреть список сотрудников",
+      "module": "accounts",
+      "description": "Видит общий список сотрудников"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 53,
+    "fields": {
+      "codename": "can_view_full_employee_card",
+      "name": "Смотреть полную карточку сотрудника",
+      "module": "accounts",
+      "description": "Видит всю информацию о любом сотруднике"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 54,
+    "fields": {
+      "codename": "can_view_limited_employee_card",
+      "name": "Смотреть ограниченную карточку сотрудника",
+      "module": "accounts",
+      "description": "Видит только ФИО, Telegram, почту и доступы"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 55,
+    "fields": {
+      "codename": "can_view_own_card",
+      "name": "Смотреть свою карточку",
+      "module": "accounts",
+      "description": "Видит свой профиль"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 56,
+    "fields": {
+      "codename": "can_create_employee",
+      "name": "Создавать сотрудника",
+      "module": "accounts",
+      "description": "Может добавить нового сотрудника в систему"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 57,
+    "fields": {
+      "codename": "can_delete_employee",
+      "name": "Удалять сотрудника",
+      "module": "accounts",
+      "description": "Может удалить сотрудника из системы"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 58,
+    "fields": {
+      "codename": "can_edit_any_profile",
+      "name": "Редактировать любой профиль",
+      "module": "accounts",
+      "description": "Может редактировать профиль любого сотрудника"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 59,
+    "fields": {
+      "codename": "can_assign_role",
+      "name": "Назначать роль сотруднику",
+      "module": "accounts",
+      "description": "Может менять основную роль сотрудника"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 60,
+    "fields": {
+      "codename": "can_assign_extra_permissions",
+      "name": "Выдавать дополнительные права",
+      "module": "accounts",
+      "description": "Может добавлять/убирать отдельные права"
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 61,
+    "fields": {
+      "codename": "crm_view_company",
+      "name": "Просмотр компаний",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 62,
+    "fields": {
+      "codename": "crm_edit_company",
+      "name": "Редактирование компаний",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 63,
+    "fields": {
+      "codename": "crm_view_deal",
+      "name": "Просмотр сделок",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 64,
+    "fields": {
+      "codename": "crm_edit_deal",
+      "name": "Редактирование сделок",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 65,
+    "fields": {
+      "codename": "crm_change_stage",
+      "name": "Смена стадии сделки",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 66,
+    "fields": {
+      "codename": "crm_delete_deal",
+      "name": "Удаление сделки",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 67,
+    "fields": {
+      "codename": "crm_view_all_deals",
+      "name": "Просмотр всех сделок",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 68,
+    "fields": {
+      "codename": "crm_export",
+      "name": "Экспорт сделок",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 69,
+    "fields": {
+      "codename": "crm_log_activity",
+      "name": "Логирование активностей",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 70,
+    "fields": {
+      "codename": "crm_view_own_tasks",
+      "name": "Смотреть свои CRM-задачи",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 71,
+    "fields": {
+      "codename": "crm_view_all_tasks",
+      "name": "Смотреть все CRM-задачи",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 72,
+    "fields": {
+      "codename": "crm_edit_task",
+      "name": "Создавать/редактировать CRM-задачи",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 73,
+    "fields": {
+      "codename": "crm_delete_task",
+      "name": "Удалять CRM-задачи",
+      "module": "crm",
+      "description": ""
+    }
+  },
+  {
+    "model": "accounts.businesspermission",
+    "pk": 74,
+    "fields": {
+      "codename": "crm_assign_task",
+      "name": "Назначать CRM-задачи другим",
+      "module": "crm",
+      "description": ""
+    }
+  }
+]

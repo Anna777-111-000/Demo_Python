@@ -1,0 +1,32 @@
+[
+  {
+    "model": "accounts.role",
+    "pk": 7,
+    "fields": {
+      "name": "Менеджер по продажам",
+      "codename": "sales_manager",
+      "is_super_role": false,
+      "permissions": [61, 62, 63, 64, 65, 69]
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 8,
+    "fields": {
+      "name": "Руководитель продаж",
+      "codename": "sales_head",
+      "is_super_role": false,
+      "permissions": [61, 62, 63, 64, 65, 66, 67, 68, 69]
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 9,
+    "fields": {
+      "name": "Маркетолог",
+      "codename": "marketer",
+      "is_super_role": false,
+      "permissions": [61, 63, 68]
+    }
+  }
+]

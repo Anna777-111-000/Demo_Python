@@ -1,0 +1,86 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{% if task %}Редактирование задачи{% else %}Новая задача{% endif %}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>{% if task %}✏️ Редактирование задачи{% else %}➕ Новая задача{% endif %}</h2>
+    <a href="{% url 'crm:task_kanban' %}" class="btn btn-outline-secondary">← К канбану</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" name="title" class="form-control" required value="{{ task.title|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3">{{ task.description|default:'' }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Статус</label>
+                            <select name="status" class="form-select">
+                                {% for code, name in statuses %}
+                                    <option value="{{ code }}" {% if task.status == code or not task and code == 'todo' %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Приоритет</label>
+                            <select name="priority" class="form-select">
+                                {% for code, name in priorities %}
+                                    <option value="{{ code }}" {% if task.priority == code or not task and code == 'medium' %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Срок</label>
+                        <input type="date" name="due_date" class="form-control" value="{{ task.due_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Сделка (опционально)</label>
+                            <select name="deal" class="form-select">
+                                <option value="">— нет —</option>
+                                {% for d in deals %}
+                                    <option value="{{ d.pk }}" {% if task.deal_id == d.pk %}selected{% endif %}>{{ d.title }} ({{ d.company.name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Компания (опционально)</label>
+                            <select name="company" class="form-select">
+                                <option value="">— нет —</option>
+                                {% for c in companies %}
+                                    <option value="{{ c.pk }}" {% if task.company_id == c.pk %}selected{% endif %}>{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    {% if can_assign %}
+                    <div class="mb-3">
+                        <label class="form-label">Исполнитель</label>
+                        <select name="assignee" class="form-select">
+                            {% for o in owners %}
+                                <option value="{{ o.pk }}" {% if task.assignee_id == o.pk or not task and o.pk == user.pk %}selected{% endif %}>
+                                    {{ o.employee_profile.full_name|default:o.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <button class="btn btn-primary">{% if task %}Сохранить{% else %}Создать{% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

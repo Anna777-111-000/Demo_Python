@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Локальные скрипты (если не хотите их в репо)
+# create_profiles.py
+# check_passwords.py
+# reset_passwords.py
+
+# Непонятный файл "user" — если это не часть проекта
+# user

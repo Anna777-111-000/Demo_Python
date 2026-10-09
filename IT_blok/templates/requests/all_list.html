@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Все запросы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Все запросы и предложения</h1>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Тип</th>
+                    <th>От кого</th>
+                    <th>Описание</th>
+                    <th>Срочность</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.get_request_type_display }}</td>
+                    <td>{{ req.created_by.employee_profile.full_name|default:req.created_by.username }}</td>
+                    <td>{{ req.description|truncatechars:50 }}</td>
+                    <td>{{ req.priority|default:"—" }}</td>
+                    <td>{{ req.get_status_display|default:"Новый" }}</td>
+                    <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">Нет запросов</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

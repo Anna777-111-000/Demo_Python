@@ -1,0 +1,44 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{% if company %}Редактирование компании{% else %}Новая компания{% endif %}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>{% if company %}✏️ Редактирование компании{% else %}➕ Новая компания{% endif %}</h2>
+    <a href="{% if company %}{% url 'crm:company_detail' pk=company.pk %}{% else %}{% url 'crm:company_list' %}{% endif %}" class="btn btn-outline-secondary">← Назад</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Название *</label>
+                        <input type="text" name="name" class="form-control" required value="{{ company.name|default:'' }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">ИНН</label>
+                            <input type="text" name="inn" class="form-control" value="{{ company.inn|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Отрасль</label>
+                            <input type="text" name="industry" class="form-control" value="{{ company.industry|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Сайт</label>
+                        <input type="url" name="website" class="form-control" value="{{ company.website|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Адрес</label>
+                        <textarea name="address" class="form-control" rows="2">{{ company.address|default:'' }}</textarea>
+                    </div>
+                    <button class="btn btn-primary">{% if company %}Сохранить{% else %}Создать{% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

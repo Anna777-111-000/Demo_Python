@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load permissions_tags %}
+
+{% block title %}Мои доступы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0 me-auto">
+            <i class="fas fa-key" style="color: #8DA0AE;"></i>
+            Мои доступы
+        </h1>
+
+        {# Кнопка "Все доступы" — для тех, кто видит доступы всех #}
+        {% if user|has_permission:'can_view_all_accesses' %}
+            <a href="{% url 'access:list' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-list"></i> Все доступы
+            </a>
+        {% endif %}
+
+        {# Кнопка "Добавить доступ" — для тех, кто может выдавать #}
+        {% if user|has_permission:'can_grant_access' %}
+            <a href="{% url 'access:create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Добавить доступ
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Фильтр и сортировка -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" name="service" class="form-control"
+                           placeholder="Фильтр по названию сервиса..."
+                           value="{{ service_filter }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select">
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>📅 Сначала новые</option>
+                        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>📅 Сначала старые</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Применить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список доступов -->
+    <div class="row">
+        {% for acc in accesses %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if acc.service_url %}
+                            <img src="{{ acc.get_service_logo }}" alt="{{ acc.service_name }}"
+                                 style="width: 32px; height: 32px; margin-right: 12px;"
+                                 onerror="this.style.display='none'">
+                        {% endif %}
+                        <h5 class="card-title mb-0">{{ acc.service_name }}</h5>
+                    </div>
+
+                    {% if acc.service_url %}
+                    <p class="mb-2">
+                        <i class="fas fa-link text-muted"></i>
+                        <a href="{{ acc.service_url }}" target="_blank" class="text-primary">
+                            {{ acc.service_url|truncatechars:40 }}
+                        </a>
+                    </p>
+                    {% endif %}
+
+                    {% if acc.service_login %}
+                    <p class="mb-2">
+                        <i class="fas fa-user text-muted"></i>
+                        <strong>Логин:</strong> {{ acc.service_login }}
+                    </p>
+                    {% endif %}
+
+                    <p class="mb-2">
+                        <i class="fas fa-user-check text-muted"></i>
+                        <strong>Выдал:</strong> {{ acc.granted_by.employee_profile.full_name|default:acc.granted_by.username }}
+                    </p>
+
+                    <p class="mb-2">
+                        <i class="fas fa-calendar-alt text-muted"></i>
+                        <strong>Выдан:</strong> {{ acc.granted_at|date:"d.m.Y" }}
+                    </p>
+
+                    {% if acc.expires_at %}
+                    <p class="mb-2">
+                        <i class="fas fa-hourglass-half text-muted"></i>
+                        <strong>Срок до:</strong>
+                        {% if acc.expires_at < now %}
+                            <span class="text-danger">{{ acc.expires_at|date:"d.m.Y" }}</span>
+                        {% else %}
+                            <span>{{ acc.expires_at|date:"d.m.Y" }}</span>
+                        {% endif %}
+                    </p>
+                    {% endif %}
+
+                    {% if acc.comment %}
+                    <hr>
+                    <p class="mb-0 text-muted small">
+                        <i class="fas fa-comment"></i> {{ acc.comment }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-key fa-3x mb-3"></i>
+                <p>У вас пока нет доступов</p>
+                <small>Если вам нужен доступ к какому-либо сервису, создайте запрос админам</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

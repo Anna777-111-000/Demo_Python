@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white text-center py-3">
+                    <h4 class="mb-0"><i class="fas fa-code"></i> IT-блок</h4>
+                    <small class="text-muted">Вход в систему</small>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Имя пользователя</label>
+                            <input type="text" name="username" class="form-control" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Пароль</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </button>
+                    </form>
+                    <div class="text-end mt-2">
+                        <a href="{% url 'accounts:password_reset' %}" class="text-muted small">
+                            Забыли пароль?
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block hide_navbar %}true{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'crm/base_crm.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+    <h2>🔻 Воронка продаж</h2>
+    <a href="{% url 'crm:deal_list' %}" class="btn btn-outline-secondary">📋 Списком</a>
+</div>
+
+<div class="row g-3 flex-nowrap" style="overflow-x: auto;">
+    {% for col in columns %}
+    <div class="col" style="min-width: 240px;">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="d-flex justify-content-between">
+                    <span>{{ col.name }}</span>
+                    <span class="badge bg-secondary">{{ col.count }}</span>
+                </div>
+                <small class="text-muted">{{ col.sum|floatformat:0 }} ₽</small>
+            </div>
+            <div class="card-body p-2" style="min-height: 200px;">
+                {% for d in col.deals %}
+                <div class="card mb-2">
+                    <div class="card-body p-2">
+                        <a href="{% url 'crm:deal_detail' pk=d.pk %}" class="fw-bold">{{ d.title }}</a>
+                        <div class="small text-muted">{{ d.company.name }}</div>
+                        <div class="small">{{ d.amount|floatformat:0 }} ₽</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center">Пусто</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{{ company.name }}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>🏢 {{ company.name }}</h2>
+    <div>
+        {% if can_edit %}
+            <a href="{% url 'crm:company_edit' pk=company.pk %}" class="btn btn-sm btn-outline-primary">✏️ Редактировать</a>
+            <a href="{% url 'crm:company_delete' pk=company.pk %}" class="btn btn-sm btn-outline-danger">🗑 Удалить</a>
+        {% endif %}
+        <a href="{% url 'crm:company_list' %}" class="btn btn-sm btn-outline-secondary">← К списку</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">Информация</div>
+            <div class="card-body">
+                <p><strong>ИНН:</strong> {{ company.inn|default:"—" }}</p>
+                <p><strong>Отрасль:</strong> {{ company.industry|default:"—" }}</p>
+                <p><strong>Сайт:</strong>
+                    {% if company.website %}<a href="{{ company.website }}" target="_blank">{{ company.website }}</a>{% else %}—{% endif %}
+                </p>
+                <p><strong>Адрес:</strong><br>{{ company.address|default:"—"|linebreaksbr }}</p>
+                <p><strong>Ответственный:</strong> {{ company.owner.employee_profile.full_name|default:company.owner.username|default:"—" }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Контакты ({{ contacts|length }})</span>
+                {% if can_edit %}
+                    <a href="{% url 'crm:contact_create' company_id=company.pk %}" class="btn btn-sm btn-outline-primary">+ Добавить</a>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush">
+            {% for ct in contacts %}
+                <li class="list-group-item">
+                    <strong>{{ ct.full_name }}</strong>
+                    {% if ct.is_primary %}<span class="badge bg-primary">основной</span>{% endif %}
+                    <br><small class="text-muted">{{ ct.position|default:"" }}</small>
+                    {% if ct.phone %}<br>📞 {{ ct.phone }}{% endif %}
+                    {% if ct.email %}<br>✉️ {{ ct.email }}{% endif %}
+                    {% if can_edit %}
+                    <div class="mt-2">
+                        <a href="{% url 'crm:contact_edit' pk=ct.pk %}" class="btn btn-sm btn-outline-secondary">✏️</a>
+                        <a href="{% url 'crm:contact_delete' pk=ct.pk %}" class="btn btn-sm btn-outline-danger">🗑</a>
+                    </div>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">Контактов нет</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Сделки ({{ deals|length }})</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr><th>Название</th><th>Стадия</th><th>Сумма</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for d in deals %}
+                        <tr>
+                            <td><a href="{% url 'crm:deal_detail' pk=d.pk %}">{{ d.title }}</a></td>
+                            <td>{{ d.get_stage_display }}</td>
+                            <td>{{ d.amount|floatformat:0 }} {{ d.currency }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted">Сделок нет</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Последние активности</div>
+            <ul class="list-group list-group-flush">
+            {% for a in activities %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ a.get_kind_display }}{% if a.subject %} — {{ a.subject }}{% endif %}</span>
+                        <small class="text-muted">{{ a.created_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">Нет активностей</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

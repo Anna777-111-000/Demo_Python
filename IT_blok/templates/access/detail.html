@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Подробнее о доступе{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-key" style="color: #8DA0AE;"></i> 
+            Детали доступа
+        </h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="text-muted small">Сотрудник</label>
+                        <p class="mb-0 fw-bold">{{ access.employee.employee_profile.full_name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Сервис</label>
+                        <div class="d-flex align-items-center">
+                            {% if access.service_url %}
+                            <img src="{{ access.get_service_logo }}" alt="" style="width: 24px; height: 24px; margin-right: 10px;" onerror="this.style.display='none'">
+                            {% endif %}
+                            <p class="mb-0 fw-bold">{{ access.service_name }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Ссылка на сервис</label>
+                        <p class="mb-0">
+                            {% if access.service_url %}
+                            <a href="{{ access.service_url }}" target="_blank">{{ access.service_url }}</a>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="text-muted small">Логин</label>
+                        <p class="mb-0"><code>{{ access.service_login|default:"—" }}</code></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Кто выдал</label>
+                        <p class="mb-0">{{ access.granted_by.employee_profile.full_name|default:access.granted_by.username }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Дата выдачи</label>
+                        <p class="mb-0">{{ access.granted_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                    {% if access.expires_at %}
+                    <div class="mb-3">
+                        <label class="text-muted small">Срок действия</label>
+                        <p class="mb-0 {% if access.expires_at < now %}text-danger{% endif %}">
+                            {{ access.expires_at|date:"d.m.Y" }}
+                            {% if access.expires_at < now %}
+                            <span class="badge bg-danger ms-2">Просрочен</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if access.comment %}
+            <div class="mt-3">
+                <label class="text-muted small">Комментарий</label>
+                <p class="mb-0 bg-light p-2 rounded">{{ access.comment }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

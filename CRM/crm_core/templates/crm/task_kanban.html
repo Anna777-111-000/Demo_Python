@@ -1,0 +1,111 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}Задачи{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>🗂 Канбан задач</h2>
+    {% if can_edit %}
+        <a href="{% url 'crm:task_create' %}" class="btn btn-primary">+ Новая задача</a>
+    {% endif %}
+</div>
+
+<div class="row g-3 flex-nowrap" style="overflow-x: auto;">
+    {% for col in columns %}
+    <div class="col" style="min-width: 280px;">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ col.name }}</span>
+                    <span class="badge bg-secondary">{{ col.count }}</span>
+                </div>
+            </div>
+            <div class="card-body p-2 task-column"
+                 data-status="{{ col.code }}"
+                 style="min-height: 300px;">
+
+                {% for t in col.tasks %}
+                <div class="card mb-2 task-item" data-task-id="{{ t.pk }}" draggable="true">
+                    <div class="card-body p-2">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'crm:task_detail' pk=t.pk %}" class="fw-bold">{{ t.title }}</a>
+                            <span class="badge
+                                {% if t.priority == 'high' %}bg-danger
+                                {% elif t.priority == 'medium' %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %}">
+                                {{ t.get_priority_display }}
+                            </span>
+                        </div>
+                        {% if t.deal %}
+                            <div class="small text-muted">📋 {{ t.deal.title }}</div>
+                        {% elif t.company %}
+                            <div class="small text-muted">🏢 {{ t.company.name }}</div>
+                        {% endif %}
+                        <div class="small text-muted mt-1">
+                            👤 {{ t.assignee.employee_profile.full_name|default:t.assignee.username|default:"—" }}
+                        </div>
+                        {% if t.due_date %}
+                            <div class="small {% if t.due_date < today %}text-danger{% else %}text-muted{% endif %}">
+                                📅 {{ t.due_date|date:"d.m.Y" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center">Пусто</p>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+(function() {
+    const csrf = "{{ csrf_token }}";
+    let dragged = null;
+
+    document.querySelectorAll('.task-item').forEach(el => {
+        el.addEventListener('dragstart', e => {
+            dragged = el;
+            el.style.opacity = 0.5;
+        });
+        el.addEventListener('dragend', e => {
+            el.style.opacity = 1;
+        });
+    });
+
+    document.querySelectorAll('.task-column').forEach(col => {
+        col.addEventListener('dragover', e => {
+            e.preventDefault();
+            col.classList.add('bg-light');
+        });
+        col.addEventListener('dragleave', e => {
+            col.classList.remove('bg-light');
+        });
+        col.addEventListener('drop', e => {
+            e.preventDefault();
+            col.classList.remove('bg-light');
+            if (!dragged) return;
+            const taskId = dragged.dataset.taskId;
+            const newStatus = col.dataset.status;
+
+            fetch(`/crm/tasks/${taskId}/move/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrf,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({status: newStatus})
+            }).then(r => r.json()).then(data => {
+                if (data.ok) {
+                    col.appendChild(dragged);
+                } else {
+                    alert('Ошибка: ' + (data.error || 'неизвестная'));
+                }
+            }).catch(() => alert('Ошибка сети'));
+        });
+    });
+})();
+</script>
+{% endblock %}

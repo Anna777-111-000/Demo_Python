@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">
+        <i class="fas fa-id-card" style="color: #8DA0AE;"></i>
+        Мой профиль
+    </h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Личная информация</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 40%">ФИО:</th>
+                            <td>{{ profile.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Корпоративная почта:</th>
+                            <td>{{ profile.corporate_email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Логин:</th>
+                            <td>{{ profile.user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Telegram:</th>
+                            <td>{{ profile.tg_nick|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Телефон:</th>
+                            <td>{{ profile.phone|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Должность:</th>
+                            <td>{{ profile.position|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Отдел:</th>
+                            <td>{{ profile.get_department_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Роль:</th>
+                            <td><span class="badge-role">{{ profile.primary_role.name|default:"Не назначена" }}</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-key"></i> Безопасность</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'accounts:change_my_password' %}" class="btn btn-warning w-100">
+                        <i class="fas fa-lock"></i> Сменить пароль
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-key"></i> Мои доступы</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'my_access' %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-eye"></i> Просмотреть доступы
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

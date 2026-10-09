@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'accounts:employee_list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-user-shield" style="color: #8DA0AE;"></i>
+            {{ title }}
+        </h1>
+    </div>
+
+    <!-- КАРТОЧКА СОТРУДНИКА (ВЕРНУЛИ) -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle" style="width: 50px; height: 50px; font-size: 1.3rem;">
+                            {{ employee.full_name|make_list|first|upper }}
+                        </div>
+                        <div class="ms-3">
+                            <h4 class="mb-0">{{ employee.full_name }}</h4>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-envelope me-1"></i> {{ employee.corporate_email }}
+                                {% if employee.tg_nick %}
+                                • <i class="fab fa-telegram me-1"></i> @{{ employee.tg_nick }}
+                                {% endif %}
+                            </p>
+                            <p class="text-muted mb-0 small">
+                                <i class="fas fa-phone me-1"></i> {{ employee.phone|default:"—" }}
+                                • <i class="fas fa-briefcase me-1"></i> {{ employee.position|default:"—" }}
+                                • <i class="fas fa-building me-1"></i> {{ employee.get_department_display }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(141, 160, 174, 0.1);">
+                        <small class="text-muted">Текущая роль</small>
+                        <div class="badge-role" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            {{ employee.primary_role.name|default:"Не назначена" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Изменение роли -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="fas fa-user-tag"></i> Роль и права</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Основная роль</label>
+                <select id="primaryRole" class="form-select">
+                    <option value="">— Без роли —</option>
+                    {% for role in all_roles %}
+                    <option value="{{ role.id }}" {% if employee.primary_role.id == role.id %}selected{% endif %}>
+                        {{ role.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <div class="form-text">При смене роли галочки обновятся автоматически</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительные права (галочки) -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="fas fa-check-square"></i> Дополнительные права</h5>
+            <small>Можно добавлять или убирать галочки вручную</small>
+        </div>
+        <div class="card-body">
+            <form id="permissionsForm">
+                {% csrf_token %}
+                <input type="hidden" name="primary_role" id="primaryRoleInput" value="{{ employee.primary_role.id|default:'' }}">
+
+                {% for module_name, perms in modules.items %}
+                <div class="mb-4">
+                    <h6 class="mb-3 pb-2 border-bottom" style="color: #5D6D7E;">{{ module_name }}</h6>
+                    <div class="row">
+                        {% for perm in perms %}
+                        <div class="col-md-4 col-lg-3 mb-2">
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       class="form-check-input permission-checkbox"
+                                       name="perm_{{ perm.codename }}"
+                                       id="perm_{{ perm.codename }}"
+                                       {% if perm.codename in effective_codenames %}checked{% endif %}>
+                                <label class="form-check-label" for="perm_{{ perm.codename }}">
+                                    {{ perm.name }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'accounts:employee_list' %}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Сохранить права</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .password-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+    .password-modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 450px;
+        max-width: 90%;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    body.dark-mode .password-modal-content {
+        background: #1a202c;
+        color: #E2E8F0;
+    }
+    .password-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .password-modal-close {
+        font-size: 28px;
+        cursor: pointer;
+    }
+    .password-modal-body {
+        padding: 20px;
+    }
+    .credentials-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    body.dark-mode .credentials-box {
+        background: #2d3748;
+    }
+    .credential-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .credential-label {
+        font-weight: bold;
+        width: 70px;
+    }
+    .credential-value {
+        flex: 1;
+        font-family: monospace;
+        font-size: 14px;
+    }
+    .btn-copy {
+        background: #8DA0AE;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        cursor: pointer;
+    }
+    .password-modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e2e8f0;
+        text-align: right;
+    }
+    .btn-copy-full {
+    background: #8DA0AE;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 14px;
+    transition: background 0.2s;
+    }
+    .btn-copy-full:hover {
+        background: #7A8B99;
+        color: white;
+    }
+    body.dark-mode .btn-copy-full {
+        background: #4a5568;
+        color: white;
+    }
+    body.dark-mode .btn-copy-full:hover {
+        background: #5a6b7c;
+    }
+
+</style>
+
+<script>
+    const roleSelect = document.getElementById('primaryRole');
+    const roleInput = document.getElementById('primaryRoleInput');
+    const checkboxes = document.querySelectorAll('.permission-checkbox');
+
+    function setCheckboxesByCodenames(codenames) {
+        checkboxes.forEach(cb => {
+            const permCodename = cb.name.replace('perm_', '');
+            cb.checked = codenames.includes(permCodename);
+        });
+    }
+
+    roleSelect.addEventListener('change', function() {
+        const roleId = this.value;
+        roleInput.value = roleId;
+
+        if (roleId) {
+            fetch(`/accounts/api/role-permissions/?role_id=${roleId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.permissions) {
+                        setCheckboxesByCodenames(data.permissions);
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+    });
+
+    // Сохранение прав через AJAX
+    document.getElementById('permissionsForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showPasswordModal(data.username, data.password, data.full_name);
+        } else {
+            alert('Ошибка при сохранении прав: ' + (data.error || 'Неизвестная ошибка'));
+        }
+    });
+
+    // Показываем временное уведомление
+function showNotification(message, isError = false) {
+    const notification = document.createElement('div');
+    notification.className = 'copy-notification';
+    notification.innerHTML = message;
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${isError ? '#dc3545' : '#28a745'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10001;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: fadeInOut 15s ease forwards;
+    `;
+    document.body.appendChild(notification);
+
+    // Удаляем уведомление через 15 секунд
+    setTimeout(() => {
+        if (notification && notification.remove) {
+            notification.remove();
+        }
+    }, 15000);
+}
+
+// Добавляем CSS для анимации
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateX(20px); }
+        10% { opacity: 1; transform: translateX(0); }
+        90% { opacity: 1; transform: translateX(0); }
+        100% { opacity: 0; transform: translateX(20px); visibility: hidden; }
+    }
+`;
+document.head.appendChild(style);
+
+function showPasswordModal(username, password, fullName) {
+    const oldModal = document.getElementById('passwordModal');
+    if (oldModal) oldModal.remove();
+
+    const modalHtml = `
+        <div id="passwordModal" class="password-modal">
+            <div class="password-modal-content">
+                <div class="password-modal-header">
+                    <h3>✅ Сотрудник создан</h3>
+                    <span class="password-modal-close" onclick="closePasswordModal()">&times;</span>
+                </div>
+                <div class="password-modal-body">
+                    <p>Сотрудник <strong>${escapeHtml(fullName)}</strong> успешно создан.</p>
+                    <div class="credentials-box">
+                        <div class="credential-row">
+                            <span class="credential-label">Логин:</span>
+                            <span class="credential-value" id="loginValue">${escapeHtml(username)}</span>
+                        </div>
+                        <div class="credential-row">
+                            <span class="credential-label">Пароль:</span>
+                            <span class="credential-value" id="passwordValue">••••••••</span>
+                        </div>
+                    </div>
+                    <button class="btn-copy-full" onclick="copyFullCredentials()">📋 Копировать логин и пароль</button>
+                    <p class="text-muted small mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        Пароль показывается только один раз. Сохраните его в безопасном месте.
+                    </p>
+                </div>
+                <div class="password-modal-footer">
+                    <a href="{% url 'accounts:employee_list' %}" class="btn btn-primary">Перейти к списку сотрудников</a>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Сохраняем пароль в data-атрибут для копирования
+    const modal = document.getElementById('passwordModal');
+    modal.setAttribute('data-password', password);
+    modal.setAttribute('data-username', username);
+}
+
+    function copyFullCredentials() {
+        const modal = document.getElementById('passwordModal');
+        const username = modal.getAttribute('data-username');
+        const password = modal.getAttribute('data-password');
+
+        const textToCopy = `Логин: ${username}\nПароль: ${password}`;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showNotification('✅ Данные скопированы');
+        }).catch(() => {
+            // fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showNotification('✅ Данные скопированы');
+        });
+    }
+
+    function closePasswordModal() {
+        const modal = document.getElementById('passwordModal');
+        if (modal) modal.remove();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    function closePasswordModal() {
+        const modal = document.getElementById('passwordModal');
+        if (modal) modal.remove();
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('✅ Скопировано:\n' + text);
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('✅ Скопировано:\n' + text);
+        });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'knowledge:list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">{{ title }}</h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Заголовок</label>
+                    {{ form.title }}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Категория</label>
+                    {{ form.category }}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Теги</label>
+                    {{ form.tags }}
+                    <div class="form-text">Теги через запятую, например: python, django, настройка</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Содержание</label>
+                    {{ form.content }}
+                </div>
+                
+                <div class="mb-3 form-check">
+                    {{ form.is_published }}
+                    <label class="form-check-label">Опубликовать (снимите для сохранения черновика)</label>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'knowledge:list' %}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

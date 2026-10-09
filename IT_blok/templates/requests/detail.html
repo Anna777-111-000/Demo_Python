@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Запрос #{{ request.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-ticket-alt" style="color: #8DA0AE;"></i>
+            Запрос #{{ request.id }}: {{ request.title|truncatechars:50 }}
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Детали запроса</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Тема:</strong> {{ request.title }}</p>
+                    <p><strong>Описание:</strong></p>
+                    <div class="p-3 bg-light rounded">
+                        {{ request.description|linebreaks }}
+                    </div>
+                    <hr>
+                    <p><strong>Автор:</strong> {{ request.created_by.username }}</p>
+                    <p><strong>Исполнитель:</strong> {{ request.assigned_to.username|default:"Не назначен" }}</p>
+                    <p><strong>Статус:</strong>
+                        {% if request.status == 'new' %}
+                            <span class="badge" style="background-color: #FFF3E0; color: #E65100; padding: 5px 10px; border-radius: 20px;">
+                                🟡 Новый
+                            </span>
+                        {% elif request.status == 'in_progress' %}
+                            <span class="badge" style="background-color: #E3F2FD; color: #1565C0; padding: 5px 10px; border-radius: 20px;">
+                                🔵 В работе
+                            </span>
+                        {% elif request.status == 'done' %}
+                            <span class="badge" style="background-color: #E8F5E9; color: #2E7D32; padding: 5px 10px; border-radius: 20px;">
+                                ✅ Выполнен
+                            </span>
+                        {% elif request.status == 'rejected' %}
+                            <span class="badge" style="background-color: #FFEBEE; color: #C62828; padding: 5px 10px; border-radius: 20px;">
+                                ❌ Отклонён
+                            </span>
+                        {% endif %}
+                    </p>
+                                        </p>
+                    {% if request.rejection_reason %}
+                    <p><strong>Причина отклонения:</strong> {{ request.rejection_reason }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Действия</h5>
+                </div>
+                <div class="card-body">
+                    {% if request.status == 'new' %}
+                        <form method="post" action="{% url 'requests:take' request.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-hand-paper"></i> Взять в работу
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    {% if request.status == 'in_progress' %}
+                        <form method="post" action="{% url 'requests:close' request.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100 mb-2">
+                                <i class="fas fa-check"></i> Закрыть запрос
+                            </button>
+                        </form>
+                        <a href="{% url 'requests:assign' request.id %}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-user-plus"></i> Назначить другому
+                        </a>
+                        <a href="{% url 'requests:reject' request.id %}" class="btn btn-danger w-100">
+                            <i class="fas fa-times"></i> Отклонить
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

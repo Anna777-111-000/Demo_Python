@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Данные сотрудника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'accounts:employee_list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-user-circle" style="color: #8DA0AE;"></i>
+            Данные сотрудника
+        </h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">{{ employee.full_name }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong><i class="fas fa-user"></i> ФИО:</strong> {{ employee.full_name }}</p>
+                    <p><strong><i class="fas fa-envelope"></i> Корпоративная почта:</strong> {{ employee.corporate_email }}</p>
+                    <p><strong><i class="fas fa-envelope"></i> Личная почта:</strong> {{ employee.personal_email|default:"—" }}</p>
+                    <p><strong><i class="fab fa-telegram"></i> Telegram:</strong> {{ employee.tg_nick|default:"—" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong><i class="fas fa-phone"></i> Телефон:</strong> {{ employee.phone|default:"—" }}</p>
+                    <p><strong><i class="fas fa-building"></i> Отдел:</strong> {{ employee.get_department_display }}</p>
+                    <p><strong><i class="fas fa-briefcase"></i> Должность:</strong> {{ employee.position|default:"—" }}</p>
+                    <p><strong><i class="fas fa-user-tag"></i> Роль:</strong> {{ employee.primary_role.name|default:"Не назначена" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

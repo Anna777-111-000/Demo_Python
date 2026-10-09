@@ -1,0 +1,85 @@
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label class="form-label fw-bold">Тип назначения</label>
+        <select name="assigned_type" id="assignedType" class="form-select">
+            <option value="user">Конкретному сотруднику</option>
+            <option value="department">Целому отделу</option>
+            <option value="multiple">Нескольким сотрудникам</option>
+        </select>
+    </div>
+    <div class="col-md-4 mb-3" id="singleUserBlock">
+        <label class="form-label fw-bold">Исполнитель</label>
+        <select name="assigned_to" class="form-select">
+            <option value="">Выберите сотрудника</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.employee_profile.full_name|default:user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4 mb-3" id="departmentBlock" style="display: none;">
+        <label class="form-label fw-bold">Отдел</label>
+        <select name="assigned_department" class="form-select">
+            <option value="it">IT-блок</option>
+            <option value="hr">HR</option>
+            <option value="finance">Финансы</option>
+            <option value="marketing">Маркетинг</option>
+            <option value="sales">Продажи</option>
+        </select>
+    </div>
+    <div class="col-md-4 mb-3" id="multipleUserBlock" style="display: none;">
+        <label class="form-label fw-bold">Несколько исполнителей</label>
+        <select name="assigned_to_multiple" class="form-select" multiple size="5">
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.employee_profile.full_name|default:user.username }}</option>
+            {% endfor %}
+        </select>
+        <div class="form-text">Зажмите Ctrl для выбора нескольких</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Дата начала</label>
+        <input type="date" name="start_date" class="form-control">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Дедлайн</label>
+        <input type="date" name="deadline" class="form-control">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="form-check">
+            <input type="checkbox" name="is_private" class="form-check-input" id="is_private">
+            <label class="form-check-label" for="is_private">
+                🔒 Личная задача (только для меня)
+            </label>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="form-check">
+            <input type="checkbox" name="created_by_system" class="form-check-input" id="created_by_system">
+            <label class="form-check-label" for="created_by_system">
+                🤖 Создано системой автоматически
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+    const assignedType = document.getElementById('assignedType');
+    const singleBlock = document.getElementById('singleUserBlock');
+    const departmentBlock = document.getElementById('departmentBlock');
+    const multipleBlock = document.getElementById('multipleUserBlock');
+    
+    assignedType.addEventListener('change', function() {
+        singleBlock.style.display = 'none';
+        departmentBlock.style.display = 'none';
+        multipleBlock.style.display = 'none';
+        
+        if (this.value === 'user') singleBlock.style.display = 'block';
+        else if (this.value === 'department') departmentBlock.style.display = 'block';
+        else if (this.value === 'multiple') multipleBlock.style.display = 'block';
+    });
+</script>

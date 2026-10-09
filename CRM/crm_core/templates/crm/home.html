@@ -1,0 +1,28 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}CRM — Главная{% endblock %}
+{% block content %}
+
+<h1 class="mb-4">💼 CRM</h1>
+<p class="text-muted">Добро пожаловать, {{ user.employee_profile.full_name|default:user.username }}!</p>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <a href="{% url 'crm:deal_list' %}" class="card p-4 text-decoration-none h-100">
+            <h3 class="card-title"><i class="fas fa-handshake"></i> Сделки</h3>
+            <p class="text-muted mb-0">Список всех сделок и работа с ними</p>
+        </a>
+    </div>
+    <div class="col-md-4 mb-3">
+        <a href="{% url 'crm:company_list' %}" class="card p-4 text-decoration-none h-100">
+            <h3 class="card-title"><i class="fas fa-building"></i> Компании</h3>
+            <p class="text-muted mb-0">Клиенты и их контакты</p>
+        </a>
+    </div>
+    <div class="col-md-4 mb-3">
+        <a href="http://127.0.0.1:8000/" class="card p-4 text-decoration-none h-100">
+            <h3 class="card-title"><i class="fas fa-code"></i> IT-портал</h3>
+            <p class="text-muted mb-0">Вернуться в портал IT-блока</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

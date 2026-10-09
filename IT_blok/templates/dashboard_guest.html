@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12 text-center mb-5">
+            <h2>Добро пожаловать, {{ user.employee_profile.full_name|default:user.username }}!</h2>
+            <p class="text-muted">Выберите действие</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Запрос админам -->
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body py-5">
+                    <i class="fas fa-headset" style="font-size: 48px; color: #8DA0AE;"></i>
+                    <h4 class="mt-3">Запрос админам</h4>
+                    <p class="text-muted">Технические вопросы, доступы, проблемы с входом</p>
+                    <a href="{% url 'requests:create_for_admin' %}" class="btn btn-primary mt-3">
+                        Создать запрос
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Запрос в разработку -->
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body py-5">
+                    <i class="fas fa-code" style="font-size: 48px; color: #8DA0AE;"></i>
+                    <h4 class="mt-3">Запрос в разработку</h4>
+                    <p class="text-muted">Новый функционал, доработки, баги</p>
+                    <a href="{% url 'requests:create_for_development' %}" class="btn btn-primary mt-3">
+                        Создать запрос
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Предложение -->
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center h-100">
+                <div class="card-body py-5">
+                    <i class="fas fa-lightbulb" style="font-size: 48px; color: #8DA0AE;"></i>
+                    <h4 class="mt-3">Предложение</h4>
+                    <p class="text-muted">Идеи по улучшению работы компании</p>
+                    <a href="{% url 'suggestions:create' %}" class="btn btn-primary mt-3">
+                        Сделать предложение
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'access:list' %}" class="btn btn-outline-secondary me-3">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="mb-0">
+            <i class="fas fa-key" style="color: #8DA0AE;"></i> 
+            {{ title }}
+        </h1>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Сотрудник -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Сотрудник <span class="text-danger">*</span></label>
+                    {{ form.employee }}
+                    <div class="form-text">Кому выдаётся доступ</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Сервис <span class="text-danger">*</span></label>
+                        {{ form.service_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Ссылка на сервис</label>
+                        {{ form.service_url }}
+                        <div class="form-text">Например: https://gitlab.company.com</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Логин в сервисе</label>
+                        {{ form.service_login }}
+                        <div class="form-text">Логин, который использует сотрудник в этом сервисе</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Срок действия</label>
+                        {{ form.expires_at }}
+                        <div class="form-text">Оставьте пустым, если бессрочно</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Комментарий</label>
+                    {{ form.comment }}
+                </div>
+
+                <!-- Информация о выдающем (менее яркая) -->
+                <div class="alert alert-light border mt-3 py-2 px-3" style="background-color: #f8f9fa;">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle text-muted"></i>
+                        Выдаёт: <strong>{{ user.get_full_name|default:user.username }}</strong> &nbsp;|&nbsp;
+                        Дата: <strong>{% now "d.m.Y H:i" %}</strong>
+                    </small>
+                </div>
+
+                <!-- Кнопки -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{% url 'access:list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Отмена
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Выдать доступ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}{{ deal.title }}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>📋 {{ deal.title }}</h2>
+    <div>
+        {% if can_edit %}
+            <a href="{% url 'crm:deal_edit' pk=deal.pk %}" class="btn btn-sm btn-outline-primary">✏️ Редактировать</a>
+        {% endif %}
+        {% if can_delete %}
+            <a href="{% url 'crm:deal_delete' pk=deal.pk %}" class="btn btn-sm btn-outline-danger">🗑 Удалить</a>
+        {% endif %}
+        <a href="{% url 'crm:deal_list' %}" class="btn btn-sm btn-outline-secondary">← К списку</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">Информация</div>
+            <div class="card-body">
+                <p><strong>Компания:</strong> <a href="{% url 'crm:company_detail' pk=deal.company.pk %}">{{ deal.company.name }}</a></p>
+                <p><strong>Контакт:</strong> {{ deal.contact.full_name|default:"—" }}</p>
+                <p><strong>Сумма:</strong> {{ deal.amount|floatformat:0 }} {{ deal.currency }}</p>
+                <p><strong>Ответственный:</strong> {{ deal.owner.employee_profile.full_name|default:deal.owner.username|default:"—" }}</p>
+                <p><strong>Источник:</strong> {{ deal.source|default:"—" }}</p>
+                <p><strong>Описание:</strong><br>{{ deal.description|default:"—"|linebreaksbr }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>Активности</span>
+                <span class="text-muted small">{{ activities|length }} записей</span>
+            </div>
+            <div class="card-body">
+                {% if can_log %}
+                <form method="post" action="{% url 'crm:activity_create' deal_id=deal.pk %}" class="mb-3">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <select name="kind" class="form-select">
+                                {% for code, name in activity_types %}
+                                    <option value="{{ code }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="subject" class="form-control" placeholder="Тема">
+                        </div>
+                        <div class="col-12">
+                            <textarea name="body" class="form-control" rows="2" placeholder="Подробности"></textarea>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button class="btn btn-sm btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+
+                <ul class="list-group">
+                {% for a in activities %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ a.get_kind_display }}{% if a.subject %} — {{ a.subject }}{% endif %}</strong>
+                            <small class="text-muted">{{ a.created_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        {% if a.body %}<div class="mt-1">{{ a.body|linebreaksbr }}</div>{% endif %}
+                        <small class="text-muted">Автор: {{ a.author.employee_profile.full_name|default:a.author.username|default:"—" }}</small>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Активностей пока нет</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Стадия</div>
+            <div class="card-body">
+                <p class="fs-5">{{ deal.get_stage_display }}</p>
+                {% if can_change_stage %}
+                <form method="post" action="{% url 'crm:deal_change_stage' pk=deal.pk %}">
+                    {% csrf_token %}
+                    <select name="stage" class="form-select mb-2">
+                        {% for code, name in deal.STAGES %}
+                            <option value="{{ code }}" {% if deal.stage == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-sm btn-primary w-100">Сменить стадию</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
